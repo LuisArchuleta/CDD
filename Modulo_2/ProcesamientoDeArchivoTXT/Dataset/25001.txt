@@ -6,17 +6,17 @@ ESTACION  : 25001
 NOMBRE    : ACATITAN
 ESTADO    : SINALOA
 MUNICIPIO : SAN IGNACIO
-SITUACIÓN : OPERANDO
+SITUACIï¿½N : OPERANDO
 ORGANISMO : CONAGUA-DGE
 CVE-OMM   : Nulo
-LATITUD   : 024.097°
-LONGITUD  : -106.667°
+LATITUD   : 024.097ï¿½
+LONGITUD  : -106.667ï¿½
 ALTITUD   : 96 msnm
  
 EMISION   : 06/04/2020 
  
            PRECIP  EVAP   TMAX   TMIN
-  FECHA     (MM)   (MM)   (°C)   (°C)
+  FECHA     (MM)   (MM)   (ï¿½C)   (ï¿½C)
 01/01/1961  0     Nulo    25     13 
 02/01/1961  0     Nulo    27.5   14 
 03/01/1961  0     Nulo    31     11 
