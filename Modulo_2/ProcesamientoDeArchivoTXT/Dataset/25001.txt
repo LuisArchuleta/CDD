@@ -16,7 +16,7 @@ ALTITUD   : 96 msnm
 EMISION   : 06/04/2020 
  
            PRECIP  EVAP   TMAX   TMIN
-  FECHA     (MM)   (MM)   (�C)   (�C)
+  FECHA     (MM)   (MM)   (°C)   (°C)
 01/01/1961  0     Nulo    25     13 
 02/01/1961  0     Nulo    27.5   14 
 03/01/1961  0     Nulo    31     11 
