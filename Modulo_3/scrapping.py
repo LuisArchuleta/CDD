@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
 
-download_path = os.path.join(os.getcwd(), "datos_conagua")
+download_path = os.path.join(os.getcwd(), "Modulo_3", "Datasets")
 if not os.path.exists(download_path):
     os.makedirs(download_path)
 
@@ -82,10 +82,10 @@ try:
             break
             
     if input_estacion:
-        print("Cuadro encontrado. Ingresando 'CULIACAN (CAADES)'...")
+        print("Cuadro encontrado. Ingresando 'CULIACAN (DGE)'...")
         # Limpiamos e ingresamos
         input_estacion.clear()
-        input_estacion.send_keys("CULIACAN (CAADES)")
+        input_estacion.send_keys("CULIACAN (DGE)")
         
         # Localizar el botón Buscar (Opción A que ya sabemos que funciona)
         print("Presionando botón Buscar...")
@@ -97,7 +97,7 @@ try:
     else:
         print("No se encontró el cuadro de texto. Probando alternativa...")
         # Alternativa extrema: Inyectar por selector genérico si el loop falla
-        driver.execute_script("document.querySelector('input[type=\"text\"]').value = 'CULIACAN (CAADES)';")
+        driver.execute_script("document.querySelector('input[type=\"text\"]').value = 'CULIACAN (DGE)';")
         driver.find_element(By.XPATH, "//*[text()='Buscar']").click()
 
 except Exception as e:
@@ -105,11 +105,11 @@ except Exception as e:
 
 # --- PASO 4: DOBLE CLIC EN EL RESULTADO ---
 try:
-    print("Buscando 'CULIACAN (CAADES), SIN' en la lista de resultados...")
+    print("Buscando 'CULIACAN (DGE), SIN' en la lista de resultados...")
     
     # 1. Localizamos el elemento en la lista. 
     # Usamos un XPATH que busque el texto exacto que aparece en tu captura.
-    selector_resultado = "//*[contains(text(), 'CULIACAN (CAADES), SIN')]"
+    selector_resultado = "//*[contains(text(), 'CULIACAN (DGE), SIN')]"
     
     # Esperamos a que el elemento sea visible y esté listo
     estacion_resultado = wait.until(EC.visibility_of_element_located((By.XPATH, selector_resultado)))
