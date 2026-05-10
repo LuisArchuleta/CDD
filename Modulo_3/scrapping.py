@@ -9,13 +9,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
 
-download_path = os.path.join(os.getcwd(), "Modulo_3", "Datasets")
+download_path = os.path.join(os.getcwd(), "Datasets")
 if not os.path.exists(download_path):
     os.makedirs(download_path)
 
 # 1. Configuración inicial
 chrome_options = Options()
-# chrome_options.add_argument("--headless") # Opcional
 prefs = {"download.default_directory": download_path}
 chrome_options.add_experimental_option("prefs", prefs)
 chrome_options.add_experimental_option("detach", True)#dejar ventana abierta. 
@@ -25,7 +24,7 @@ actions = ActionChains(driver)
 wait = WebDriverWait(driver, 15)
 
 try:
-    driver.get("https://cucapa-clicom.cicese.mx/") # O la URL exacta de descarga
+    driver.get("https://cucapa-clicom.cicese.mx/") 
     
     btn_pestana_descarga = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Descarga de Datos")))
     btn_pestana_descarga.click()
@@ -40,7 +39,7 @@ try:
     # 1. Buscamos todos los 'select' que hay en la página
     dropdowns = wait.until(EC.presence_of_all_elements_located((By.TAG_NAME, "select")))
     
-    # El primer dropdown (índice 0) suele ser el de ESTADO
+    # El primer dropdown (índice 0) es la seccion de ESTADO
     menu_estado = dropdowns[0]
     
     # 2. Asegurarnos de que sea visible y darle clic
@@ -50,7 +49,7 @@ try:
     # 3. Usar la clase Select para elegir Sinaloa
     select_estado = Select(menu_estado)
     
-    # Intentamos por texto visible
+    # Buscamos por texto
     select_estado.select_by_visible_text("Sinaloa")
     
     print("¡Sinaloa seleccionado correctamente!")
@@ -76,18 +75,18 @@ try:
     
     for i in todos_los_inputs:
         tipo = i.get_attribute("type")
-        # El cuadro de búsqueda suele ser el único input tipo 'text' visible
+        # El cuadro de búsqueda suele ser el único input tipo text visible
         if tipo == "text" and i.is_displayed():
             input_estacion = i
             break
             
     if input_estacion:
-        print("Cuadro encontrado. Ingresando 'CULIACAN (DGE)'...")
+        print("Cuadro encontrado. Ingresando 'CULIACAN (CAADES)'...")
         # Limpiamos e ingresamos
         input_estacion.clear()
-        input_estacion.send_keys("CULIACAN (DGE)")
+        input_estacion.send_keys("CULIACAN (CAADES)")
         
-        # Localizar el botón Buscar (Opción A que ya sabemos que funciona)
+        # Localizar el botón Buscar
         print("Presionando botón Buscar...")
         boton_buscar = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[text()='Buscar']")))
         boton_buscar.click()
@@ -97,7 +96,7 @@ try:
     else:
         print("No se encontró el cuadro de texto. Probando alternativa...")
         # Alternativa extrema: Inyectar por selector genérico si el loop falla
-        driver.execute_script("document.querySelector('input[type=\"text\"]').value = 'CULIACAN (DGE)';")
+        driver.execute_script("document.querySelector('input[type=\"text\"]').value = 'CULIACAN (CAADES)';")
         driver.find_element(By.XPATH, "//*[text()='Buscar']").click()
 
 except Exception as e:
@@ -105,11 +104,11 @@ except Exception as e:
 
 # --- PASO 4: DOBLE CLIC EN EL RESULTADO ---
 try:
-    print("Buscando 'CULIACAN (DGE), SIN' en la lista de resultados...")
+    print("Buscando 'CULIACAN (CAADES), SIN' en la lista de resultados...")
     
     # 1. Localizamos el elemento en la lista. 
-    # Usamos un XPATH que busque el texto exacto que aparece en tu captura.
-    selector_resultado = "//*[contains(text(), 'CULIACAN (DGE), SIN')]"
+    # Usamos un XPATH que busque el texto con la estacion.
+    selector_resultado = "//*[contains(text(), 'CULIACAN (CAADES), SIN')]"
     
     # Esperamos a que el elemento sea visible y esté listo
     estacion_resultado = wait.until(EC.visibility_of_element_located((By.XPATH, selector_resultado)))
@@ -118,7 +117,7 @@ try:
     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", estacion_resultado)
     time.sleep(1) # Pausa para que el scroll termine
     
-    # 3. Ejecutar el DOBLE CLIC
+    # 3. Ejecutar el doble clic
     print("Realizando doble clic...")
     actions.double_click(estacion_resultado).perform()
     
@@ -130,10 +129,10 @@ except Exception as e:
 
 # --- PASO 5: CICLO DE DESCARGAS (VERSION POR CLASE) ---
 try:
-    # Verificamos los nombres. A veces llevan acento: Precipitación, Evaporación
+    # Verificamos los nombres.
     variables_a_descargar = ["Tmax", "Tmin", "Precipitación", "Evaporación"]
     print("Iniciando ciclo de descargas...")
-
+    #Ciclo para descargar los 4 datasets
     for var in variables_a_descargar:
         print(f"\n--- Procesando: {var} ---")
         
@@ -147,11 +146,9 @@ try:
         print("Buscando botón de generación por XPATH relativo...")
         try:
             # Buscamos cualquier elemento que tenga el texto 'Descargar' y sea clicable
-            # Usamos un punto (.) para buscar dentro de cualquier etiqueta
             boton_generar = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'Descargar')]")))
         except:
             print("No se halló por texto, intentando por clase de botón...")
-            # En portales de este tipo, el botón de descarga suele ser el primero con clase 'btn'
             botones_btn = driver.find_elements(By.CLASS_NAME, "btn")
             # Filtramos los que son visibles y están cerca del formulario
             boton_generar = [b for b in botones_btn if b.is_displayed()][-1] # Usualmente es el último de la sección
@@ -167,10 +164,10 @@ try:
             print("FALLA CRÍTICA: No se encontró ningún botón de descarga.")
             continue
 
-        # 4. MANEJO DEL ENLACE AZUL (.csv)
+        # 4. Clic al enlace descargable
         try:
             print("Esperando enlace azul...")
-            # El enlace azul suele estar en un contenedor con ID 'mensaje' o similar
+            # El enlace azul suele estar en un contenedor con ID mensaje 
             enlace_csv = wait.until(EC.element_to_be_clickable((By.PARTIAL_LINK_TEXT, ".csv")))
             print(f"¡Enlace encontrado! Descargando {var}...")
             
@@ -188,61 +185,3 @@ try:
 
 except Exception as e:
     print(f"Error general: {e}")
-
-    # # --- PASO 5: CICLO DE DESCARGAS ---
-    # try:
-    #     # Asegúrate de que estos nombres sean idénticos a los del menú
-    #     variables_a_descargar = ["Tmax", "Tmin", "Precipitación", "Evaporación"]
-        
-    #     print("Iniciando ciclo de descargas...")
-
-    #     for var in variables_a_descargar:
-    #         print(f"\n--- Procesando: {var} ---")
-            
-    #         # 1. Refrescar el menú de variables
-    #         dropdowns = wait.until(EC.presence_of_all_elements_located((By.TAG_NAME, "select")))
-    #         menu_variable = dropdowns[1] 
-    #         Select(menu_variable).select_by_visible_text(var)
-    #         time.sleep(2) 
-
-    #         # 2. Clic en el botón para GENERAR el archivo (el botón gris)
-    #         # Probamos primero con el clic normal de Selenium que es más "humano"
-    #         try:
-    #             boton_generar = wait.until(EC.element_to_be_clickable((By.XPATH, "//input[@value='Descargar']")))
-    #             boton_generar.click()
-    #         except:
-    #             # Si falla el clic normal, usamos el de JavaScript que no falla
-    #             boton_generar = driver.find_element(By.XPATH, "//input[@value='Descargar']")
-    #             driver.execute_script("arguments[0].click();", boton_generar)
-            
-    #         print("Botón presionado. Esperando ventana emergente...")
-
-    #         # 3. MANEJO DEL ENLACE AZUL (El que sale en la ventanita)
-    #         try:
-    #             # Esperamos hasta 10 segundos a que aparezca el link del CSV
-    #             enlace_csv = wait.until(EC.element_to_be_clickable((By.PARTIAL_LINK_TEXT, ".csv")))
-    #             print(f"¡Ventana emergente detectada! Descargando {var}...")
-                
-    #             # Clic en el enlace azul
-    #             enlace_csv.click()
-                
-    #             # Espera para que inicie la descarga antes de seguir con la otra variable
-    #             time.sleep(6)
-                
-    #             # 4. CERRAR LA VENTANA EMERGENTE (Crucial para que no tape el menú)
-    #             # Buscamos el botón de cerrar (suele ser una X o un botón que dice 'Cerrar' o 'Close')
-    #             try:
-    #                 # Intentamos cerrar con la tecla Escape o buscando el botón
-    #                 actions.send_keys(webdriver.common.keys.Keys.ESCAPE).perform()
-    #                 # Opcional: buscar botón cerrar por texto si el ESC no funciona
-    #                 # driver.find_element(By.XPATH, "//*[contains(text(), 'Cerrar')]").click()
-    #             except:
-    #                 pass
-
-    #         except Exception as e_link:
-    #             print(f"No apareció el enlace para {var}. Error: {e_link}")
-
-    #     print("\n¡Ciclo terminado con éxito!")
-
-    # except Exception as e:
-    #     print(f"Error general en el ciclo: {e}")
